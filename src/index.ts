@@ -119,8 +119,8 @@ class IndexPage {
 		return mediaAttachments.map( (ma) => {
 			switch (ma.type) {
 				case "image": return `<img class="fediverse-attachment" src="${ma.url}" />`;
-				case "gifv": return `<video class="fediverse-attachment" role="application" src="${ma.url}" playsinline autoplay loop></video>`;
-				case "video": return `<video class="fediverse-attachment" role="application" controls src="${ma.url}" playsinline autoplay loop></video>`;
+				case "gifv": return `<video class="fediverse-attachment video" role="application" src="${ma.url}" controls playsinline autoplay loop></video>`;
+				case "video": return `<video class="fediverse-attachment gifv" role="application" src="${ma.url}" controls playsinline autoplay loop></video>`;
 				case "audio": return ``;
 			}
 			return;
