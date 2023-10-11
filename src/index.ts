@@ -113,7 +113,7 @@ class IndexPage {
 
 	previews = new ObservableComputation( (): string => {
 		const status = this.observableStatus.value;
-		console.log('media attachments', status?.media_attachments);
+		// console.log('media attachments', status?.media_attachments);
 		if (status == null) return "";
 		const mediaAttachments = status.media_attachments as (MediaAttachment & {type: KnownMediaType | "unknown"})[];
 		return mediaAttachments.map( (ma) => {
@@ -128,7 +128,6 @@ class IndexPage {
 	});
 
 	script = new ObservableComputation( () => {
-		console.log(`executing script computation, hasVideos=${this.hasVideos.value}`)
 		if (!this.hasVideos.value) return "";
 		return `document.addEventListener('DOMContentLoaded', () => {
 			document.querySelectorAll(".fediverse-status video").forEach( (video) => { video.play().catch( () => {} ) });
