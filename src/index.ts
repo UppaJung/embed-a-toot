@@ -2,7 +2,9 @@ import { MediaAttachment, Status } from "./MastodonApiV1Entities";
 import { ObservableComputation, ObservableValue } from "./Observable";
 import { fetchStatus } from "./fetchFromMastodonApi";
 
+// @ts-ignore:
 import templateHtml from "./tootTemplate.html?raw"; // with { type: "text/plain" };
+// @ts-ignore:
 import templateCss from "./tootTemplate.css?raw"; // with { type: "text/plain" };
 import { emojifyHtml } from "./emojifyHtml";
 
