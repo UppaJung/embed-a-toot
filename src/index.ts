@@ -2,6 +2,7 @@ import { MediaAttachment, Status } from "./MastodonApiV1Entities";
 import { ObservableComputation, ObservableValue } from "./Observable";
 import { fetchStatus } from "./fetchFromMastodonApi";
 import DOMPurify from 'dompurify';
+import domtoimage from 'dom-to-image';
 
 // @ts-ignore:
 import templateHtml from "./tootTemplate.html?raw"; // with { type: "text/plain" };
@@ -35,9 +36,10 @@ const elementIds = [
 	"tootUrlTextInput",
 	"embeddedCssContainer",
 	"embeddedHtmlContainer",
-	"embeddedTootContainer",
 	"embeddedScriptContainer",
 	"embeddedScriptContainerBlock",
+	"embeddedTootContainer",
+	"embeddedTootSvgContainer",
 	"tootScript",
 	"tootStyle",
 ] as const;
@@ -161,6 +163,16 @@ class IndexPage {
 			this.elements.embeddedTootContainer.innerHTML = html;
 			this.elements.embeddedHtmlContainer.textContent = html;
 			this.elements.tootStyle.replaceChildren(document.createTextNode(templateCss));
+			if (html.length > 0) {
+				setTimeout( () => {
+					domtoimage.toSvg(this.elements.embeddedTootContainer.children[0]).then( svg => {
+						const image = document.createElement('img');
+						image.src = svg;
+						this.elements.embeddedTootSvgContainer.replaceChildren(image);
+						return;				
+					});
+				}, 1000);
+			}
 			// document.querySelectorAll(".fediverse-status video").forEach( (video) => { (video as HTMLVideoElement).play().catch( e => {
 			// 	console.log(`could not play`, e);
 			// })});
