@@ -19,10 +19,16 @@
     </style>
   </head>
   <body>
-    <div id="app">
+    <div>
       <style id="tootStyle"></style>
+      <h2>Embed-A-Toot</h2>
+      <p>Open-source toot embedding by
+        <a href="https://www.stuartschechter.org/">Stuart Schechter</a>
+        (<a href="https://mastodon.social/@MildlyAggrievedScientist">@MildlyAggrievedScientist@Mastodon.social</a>)
+        that you can contribute to on <a href="https://github.com/uppajung/embed-a-toot/">Github</a>.
+      </p>
       <script id="tootScript"></script>
-      <div class="form-element" style="margin-bottom: 3rem;">
+      <div class="form-element" style="margin-bottom: 3rem; margin-top: 3rem;">
         <label for="tootUrlTextInput">URL of Toot</label>
         <input id="tootUrlTextInput" type="text" size="60" />
       </div>
@@ -31,14 +37,14 @@
         <textarea id="embeddedCssContainer" cols="80" rows="2" readonly="true" spellcheck="false"></textarea>
       </div>
       <div class="form-element">
-        <label for="embeddedScriptContainer">JavaScript</label>
-        <textarea id="embeddedScriptContainer" cols="80" rows="2" readonly="true" spellcheck="false"></textarea>
-      </div>
-      <div class="form-element">
         <label for="embeddedHtmlContainer">HTML (embed where you want the toot to appear)</label>
         <textarea id="embeddedHtmlContainer" cols="80" rows="2" readonly="true" spellcheck="false"></textarea>
       </div>
-      <div class="form-element" style="margin-top: 3rem;">
+      <div class="form-element" id="embeddedScriptContainerBlock">
+        <label for="embeddedScriptContainer">JavaScript</label>
+        <textarea id="embeddedScriptContainer" cols="80" rows="2" readonly="true" spellcheck="false"></textarea>
+      </div>
+      <div class="form-element" style="margin-top: 1rem;">
         <label for="embeddedTootContainer">Renders as</label>
         <div id="embeddedTootContainer"></div>
       </div>

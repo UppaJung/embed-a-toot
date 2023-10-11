@@ -36,6 +36,7 @@ const elementIds = [
 	"embeddedHtmlContainer",
 	"embeddedTootContainer",
 	"embeddedScriptContainer",
+	"embeddedScriptContainerBlock",
 	"tootScript",
 	"tootStyle",
 ] as const;
@@ -152,7 +153,7 @@ class IndexPage {
 		this.observableStatusUrl = new ObservableValue<string>("")
 		this.elements.embeddedCssContainer.textContent = templateCss; //.replaceAll("\n","");
 		this.script.listen( script => {
-			console.log(`script`, script)
+			this.elements.embeddedScriptContainerBlock.style.visibility = (script.length === 0) ? 'hidden' : 'visible';
 			this.elements.embeddedScriptContainer.innerText = script;
 			this.elements.tootScript.replaceChildren(document.createTextNode(script));
 		})
