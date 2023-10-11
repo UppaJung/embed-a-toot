@@ -16,7 +16,7 @@
 }
 
 .fediverse-status .fediverse-attachment {
-	max-width: calc(80vw - 1rem);
+	max-width: calc(80vw - 2rem);
 }
 
 /*
@@ -54,6 +54,7 @@
 	background-color: rgba(196, 196, 255, 0.125);
 	/* pad left to align with header/footer content, but do not pad right (go to edge) */
 	padding-left: 0.5rem;
+	padding-right: 0.5rem;
 	/* pad top and bottom */
 	padding-top: 0.25rem;
 	padding-bottom: 0.25rem;
@@ -102,7 +103,7 @@
 }
 
 /* De-emphasize the parts of the author's identity other than their username */
-.fediverse-status authors-fediverse-server, .fediverse-status .at-symbol {
+.fediverse-status authors-fediverse-, .fediverse-status .at-symbol {
 	color: rgba(128,128,128, 0.75)
 }
 

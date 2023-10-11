@@ -85,7 +85,8 @@ class IndexPage {
 		return addValuesToTemplate(templateHtml, {
 			authorLink: `${status.account.url}`,
 			authorUserName: status.account.username,
-			authorServer: new URL(status.account.url).hostname,
+			server: new URL(status.account.url).hostname,
+			statusId: status.id,
 			authorName: emojifyHtml(status.account.display_name, status.account.emojis),
 			avatarUrl: `${status.account.avatar}`,
 			contentHtml: emojifyHtml(status.content, status.emojis) + this.previews.value,
@@ -101,9 +102,10 @@ class IndexPage {
 		});
 	});
 
-	mediaAttachments = new ObservableComputation( (): (MediaAttachment & {type: KnownMediaType | "unknown"})[] => {
-		return (this.observableStatus.value?.media_attachments ?? []) as (MediaAttachment & {type: KnownMediaType | "unknown"})[];;
-	})
+	mediaAttachments = new ObservableComputation( (): (MediaAttachment & {type: KnownMediaType | "unknown"})[] =>
+		(this.observableStatus.value?.media_attachments ?? []) as (MediaAttachment & {type: KnownMediaType | "unknown"})[]
+	);
+
 	hasVideos =  new ObservableComputation( () =>
 		this.mediaAttachments.value.find( ma => ma.type === "gifv" || ma.type === "video") != null
 	);
@@ -125,7 +127,8 @@ class IndexPage {
 	});
 
 	script = new ObservableComputation( () => {
-		if (!this.hasVideos) return "";
+		console.log(`executing script computation, hasVideos=${this.hasVideos.value}`)
+		if (!this.hasVideos.value) return "";
 		return `document.addEventListener('DOMContentLoaded', () => {
 			document.querySelectorAll(".fediverse-status video").forEach( (video) => { video.play().catch( () => {} ) });
 		});
@@ -138,11 +141,18 @@ class IndexPage {
 			elements[elementId] = document.getElementById(elementId) ?? (() => {throw new Error(`Missing element with id ${elementId}`)})();
 			return elements;
 		}, {} as Record<(typeof elementIds)[number], HTMLElement>);
+		(this.elements.tootUrlTextInput as HTMLInputElement).value = (window.location.search
+			.substring(1) // skip '?'
+			.split('&')
+			.map( pair => pair.split('='))
+			.find( ([key]) => key === "toot") ?? ["", ""])
+			[1];
 		this.elements.tootUrlTextInput.addEventListener('change', () => this.onStatusUrlChange());
 		this.elements.tootUrlTextInput.addEventListener('paste', (e) => this.onStatusUrlChange(e.clipboardData?.getData('text')));
 		this.observableStatusUrl = new ObservableValue<string>("")
 		this.elements.embeddedCssContainer.textContent = templateCss; //.replaceAll("\n","");
 		this.script.listen( script => {
+			console.log(`script`, script)
 			this.elements.embeddedScriptContainer.innerText = script;
 			this.elements.tootScript.replaceChildren(document.createTextNode(script));
 		})
@@ -150,9 +160,9 @@ class IndexPage {
 			this.elements.embeddedTootContainer.innerHTML = html;
 			this.elements.embeddedHtmlContainer.textContent = html;
 			this.elements.tootStyle.replaceChildren(document.createTextNode(templateCss));
-			document.querySelectorAll(".fediverse-status video").forEach( (video) => { (video as HTMLVideoElement).play().catch( e => {
-				console.log(`could not play`, e);
-			})});
+			// document.querySelectorAll(".fediverse-status video").forEach( (video) => { (video as HTMLVideoElement).play().catch( e => {
+			// 	console.log(`could not play`, e);
+			// })});
 		});
 		this.onStatusUrlChange();
 		textAreaSelectAndCopyOnClick(this.elements.embeddedHtmlContainer as HTMLTextAreaElement);

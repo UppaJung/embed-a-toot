@@ -1,24 +1,24 @@
-<article class="fediverse-status">
+<article class="fediverse-status" data-server="{{server}}" data-status="{{statusId}}">
 	<header>
-		<a href="{{authorLink}}" rel="external nofollow" title="view profile at @{{authorUserName}}@{{authorServer}}" class="authors-avatar-link">
+		<a href="{{authorLink}}" rel="external nofollow" title="view profile at @{{authorUserName}}@{{server}}" class="authors-avatar-link">
 			<picture class="authors-avatar">
 				<source srcset="{{avatarUrl}}" media="(prefers-reduced-motion: no-preference)"/>
-				<img src="{{avatarUrl}}" alt="@{{authorUserName}}@{{authorServer}} avatar" class="authors-avatar"/>
+				<img src="{{avatarUrl}}" alt="@{{authorUserName}}@{{server}} avatar" class="authors-avatar"/>
 			</picture>
 		</a>
 		<div class="comment-author">
 			<span class="comment-authors-display-name">{{authorName}}</span>
-				<a href="{{authorLink}}" title="@{{authorUserName}}@{{authorServer}}" rel="external nofollow" class="comment-authors-fediverse-identity">
+				<a href="{{authorLink}}" title="@{{authorUserName}}@{{server}}" rel="external nofollow" class="comment-authors-fediverse-identity">
 					<span class="at-symbol username-at-symbol">@</span>
 					<span class="comment-authors-fediverse-username">{{authorUserName}}</span>
-					<span class="at-symbol server-at-symbol">@</span><span class="comment-authors-fediverse-server">{{authorServer}}</span>
+					<span class="at-symbol -at-symbol">@</span><span class="comment-authors-fediverse-">{{server}}</span>
 				</a>
 		</div>
 	</header>
 	<main>{{contentHtml}}</main>
 	<footer>
 		<time datetime="{{dateTimeIso}}" class="comment-time">{{dateTimeText}}</time>
-		<a href="{{favoritesLink}}" title="favourites reported by {{authorServer}}" class="counter-favourites">{{favoritesCount}}</a>
-		<a href="{{reblogsLink}}" title="reblogs reported by {{authorServer}}" class="counter-reblogs">{{reblogsCount}}</a>
+		<a href="{{favoritesLink}}" title="favourites reported by {{server}}" class="counter-favourites">{{favoritesCount}}</a>
+		<a href="{{reblogsLink}}" title="reblogs reported by {{server}}" class="counter-reblogs">{{reblogsCount}}</a>
 	</footer>
 </article>
