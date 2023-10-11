@@ -24,7 +24,11 @@
   },
   "homepage": "https://github.com/uppajung/embed-a-toot#readme",
   "devDependencies": {
+    "@types/dompurify": "^3.0.3",
     "typescript": "^5.3.0-beta",
     "vite": "^4.4.11"
+  },
+  "dependencies": {
+    "dompurify": "^3.0.6"
   }
 }

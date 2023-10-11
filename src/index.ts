@@ -1,6 +1,7 @@
 import { MediaAttachment, Status } from "./MastodonApiV1Entities";
 import { ObservableComputation, ObservableValue } from "./Observable";
 import { fetchStatus } from "./fetchFromMastodonApi";
+import DOMPurify from 'dompurify';
 
 // @ts-ignore:
 import templateHtml from "./tootTemplate.html?raw"; // with { type: "text/plain" };
@@ -44,7 +45,7 @@ const elementIds = [
 const addValuesToTemplate = (template: string, keyValuePairs: Record<string, string>) => {
 	let result = template;
 	Object.entries(keyValuePairs).forEach( ([key, value]) => {
-		result = result.replaceAll(`{{${key}}}`, value)
+		result = result.replaceAll(`{{${key}}}`, DOMPurify.sanitize(value))
 	});
 	return result;
 }
@@ -84,12 +85,12 @@ class IndexPage {
 		const status = this.observableStatus.value;
 		if (status == null) return "";
 		return addValuesToTemplate(templateHtml, {
-			authorLink: `${status.account.url}`,
+			authorLink: status.account.url,
 			authorUserName: status.account.username,
 			server: new URL(status.account.url).hostname,
 			statusId: status.id,
 			authorName: emojifyHtml(status.account.display_name, status.account.emojis),
-			avatarUrl: `${status.account.avatar}`,
+			avatarUrl: status.account.avatar,
 			contentHtml: emojifyHtml(status.content, status.emojis) + this.previews.value,
 			dateTimeIso: new Date(status.created_at).toISOString(),
 			dateTimeText: new Date(status.created_at).toLocaleString(undefined, {
