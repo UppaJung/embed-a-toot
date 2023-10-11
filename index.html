@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comments</title>
+    <style>
+      .form-element {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+      }
+      .form-element label {
+        font-size: 0.8rem;
+      }
+      #tootUrlTextInput {
+        background-color: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <style id="tootStyle"></style>
+      <script id="tootScript"></script>
+      <div class="form-element" style="margin-bottom: 3rem;">
+        <label for="tootUrlTextInput">URL of Toot</label>
+        <input id="tootUrlTextInput" type="text" size="60" value="https://cyberplace.social/@GossiTheDog/111171186730881873" />
+      </div>
+      <div class="form-element">
+        <label for="embeddedCssContainer">CSS (embed once in a &lt;style&gt; element or add to your site's CSS)</label>
+        <textarea id="embeddedCssContainer" cols="80" rows="2" readonly="true" spellcheck="false"></textarea>
+      </div>
+      <div class="form-element">
+        <label for="embeddedScriptContainer">JavaScript</label>
+        <textarea id="embeddedScriptContainer" cols="80" rows="2" readonly="true" spellcheck="false"></textarea>
+      </div>
+      <div class="form-element">
+        <label for="embeddedHtmlContainer">HTML (embed where you want the toot to appear)</label>
+        <textarea id="embeddedHtmlContainer" cols="80" rows="2" readonly="true" spellcheck="false"></textarea>
+      </div>
+      <div class="form-element" style="margin-top: 3rem;">
+        <label for="embeddedTootContainer">Renders as</label>
+        <div id="embeddedTootContainer"></div>
+      </div>
+    </div>
+    <script type="module" src="/src/index.ts"></script>
+  </body>
+</html>

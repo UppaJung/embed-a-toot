@@ -1,0 +1,30 @@
+{
+  "name": "embed-a-toot",
+  "version": "1.0.0",
+  "description": "Tools for embedding Mastodon Toots (Fediverse Posts)",
+  "main": "index.js",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uppajung/embed-a-toot.git"
+  },
+  "keywords": [
+    "fediverse",
+    "mastodon"
+  ],
+  "author": "Stuart Schechter",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/uppajung/embed-a-toot/issues"
+  },
+  "homepage": "https://github.com/uppajung/embed-a-toot#readme",
+  "devDependencies": {
+    "typescript": "^5.3.0-beta",
+    "vite": "^4.4.11"
+  }
+}
