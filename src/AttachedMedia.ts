@@ -13,9 +13,9 @@ export const renderMediaPreviews = (status: Status) => {
 	const mediaAttachments = status.media_attachments as (MediaAttachment & { type: KnownMediaType | "unknown"; })[];
 	return mediaAttachments.map((ma) => {
 		switch (ma.type) {
-			case "image": return `<img class="${TemplateClass.fediverseAttachment}" src="${ma.url}" />`;
-			case "gifv": return `<video class="${TemplateClass.fediverseAttachment}" video" role="application" src="${ma.url}" controls playsinline autoplay loop></video>`;
-			case "video": return `<video class="${TemplateClass.fediverseAttachment}" gifv" role="application" src="${ma.url}" controls playsinline autoplay loop></video>`;
+			case "image": return `<img class="${TemplateClass.fediverseAttachment}" src="${ma.url}" alt="${encodeURIComponent(ma.description)}" />`;
+			case "gifv": return `<video class="${TemplateClass.fediverseAttachment}" video" alt="${encodeURIComponent(ma.description)}" role="application" src="${ma.url}" controls playsinline autoplay loop></video>`;
+			case "video": return `<video class="${TemplateClass.fediverseAttachment}" gifv" alt="${encodeURIComponent(ma.description)}" role="application" src="${ma.url}" controls playsinline autoplay loop></video>`;
 			case "audio": return ``;
 		}
 		return;
