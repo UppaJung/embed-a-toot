@@ -1,14 +1,14 @@
-import { MediaAttachment, Status } from "./MastodonApiV1Entities";
+import type { MediaAttachment, Status } from "./MastodonApiV1Entities";
 import { ObservableComputation, ObservableValue } from "./Observable";
 import { fetchStatus } from "./fetchFromMastodonApi";
 import DOMPurify from 'dompurify';
 import domtoimage from 'dom-to-image';
 
-// @ts-ignore:
-import templateHtml from "./tootTemplate.html?raw"; // with { type: "text/plain" };
+import {templateHtml} from "./tootTemplateHtml";
 // @ts-ignore:
 import templateCss from "./tootTemplate.css?raw"; // with { type: "text/plain" };
 import { emojifyHtml } from "./emojifyHtml";
+import { TemplateClass, TemplateDataKey } from "./TemplateConstants";
 
 const KnownMediaTypes = [
 	"image", //  Static image
@@ -17,20 +17,6 @@ const KnownMediaTypes = [
 	"audio" //  Audio track
 ] as const;
 type KnownMediaType = (typeof KnownMediaTypes)[number];
-
-// Support for the HTML Sanitizer API (not yet supported by Safari/FireFox)
-// https://wicg.github.io/sanitizer-api/
-// https://developer.mozilla.org/en-US/docs/Web/API/HTML_Sanitizer_API
-declare global {
-	class Sanitizer {
-	}
-	interface SetHTMLOptions {
-		sanitizer: Sanitizer
-	}
-	interface Element {
-		setHTML(input: string, options?: SetHTMLOptions): void;
-	}
-}
 
 const elementIds = [
 	"tootUrlTextInput",
@@ -83,12 +69,18 @@ class IndexPage {
 		this.observableStatus.value = this.statusCache.get(this.observableStatusUrl.value);
 	}
 
+	options = new ObservableComputation( (): string => {
+		// FIXME
+		return "";
+	})
+
 	html = new ObservableComputation( (): string => {
 		const status = this.observableStatus.value;
 		if (status == null) return "";
 		return addValuesToTemplate(templateHtml, {
 			authorLink: status.account.url,
 			authorUserName: status.account.username,
+			options: this.options.value,
 			server: new URL(status.account.url).hostname,
 			statusId: status.id,
 			authorName: emojifyHtml(status.account.display_name, status.account.emojis),
@@ -99,11 +91,19 @@ class IndexPage {
 				month: "short", day: "numeric", year: "numeric",
 				hour: "numeric", minute: "2-digit"
 			}),
+			displayNoneIfNotEdited: status.edited_at == null ? `display="none"` : "",
+			editedDateTimeIso: status.edited_at == null ? "" :
+				new Date(status.edited_at).toISOString(),
+			editedDateTimeText: status.edited_at == null ? "" :
+				new Date(status.edited_at).toLocaleString(undefined, {
+					month: "short", day: "numeric", year: "numeric",
+					hour: "numeric", minute: "2-digit"
+				}),
 			favoritesLink: `${status.url}/favourites`,
 			reblogsLink: `${status.url}/reblogs`,
 			favoritesCount: `${status.favourites_count}`,
 			reblogsCount: `${status.reblogs_count}`,
-		});
+		} satisfies Record<TemplateDataKey, string>);
 	});
 
 	mediaAttachments = new ObservableComputation( (): (MediaAttachment & {type: KnownMediaType | "unknown"})[] =>
@@ -121,9 +121,9 @@ class IndexPage {
 		const mediaAttachments = status.media_attachments as (MediaAttachment & {type: KnownMediaType | "unknown"})[];
 		return mediaAttachments.map( (ma) => {
 			switch (ma.type) {
-				case "image": return `<img class="fediverse-attachment" src="${ma.url}" />`;
-				case "gifv": return `<video class="fediverse-attachment video" role="application" src="${ma.url}" controls playsinline autoplay loop></video>`;
-				case "video": return `<video class="fediverse-attachment gifv" role="application" src="${ma.url}" controls playsinline autoplay loop></video>`;
+				case "image": return `<img class="${TemplateClass.fediverseAttachment}" src="${ma.url}" />`;
+				case "gifv": return `<video class="${TemplateClass.fediverseAttachment}" video" role="application" src="${ma.url}" controls playsinline autoplay loop></video>`;
+				case "video": return `<video class="${TemplateClass.fediverseAttachment}" gifv" role="application" src="${ma.url}" controls playsinline autoplay loop></video>`;
 				case "audio": return ``;
 			}
 			return;
