@@ -136,12 +136,11 @@ export const boxed = css`
 	margin-inline-end: .25em;          
 }
 
-.${TemplateClass.fediverseStatus} main img {
+.${TemplateClass.fediverseStatus} main img, .${TemplateClass.fediverseStatus} main video {
 	padding-top: 0.5rem;
 	display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 50%;
 }
 
 `.trim();
