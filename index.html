@@ -4,51 +4,94 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Embed-a-Toot</title>
+    <script type="module" src="/src/index.ts"></script>
     <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      footer {
+        margin-top: 2rem;
+      }
       .form-element {
+        margin-bottom: 0.5rem;
         display: flex;
         flex-direction: column;
         align-items: start;
       }
-      .form-element label {
+      .form-element-checkbox {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+      }
+      /* .form-element label, .form-element-checkbox label {
         font-size: 0.8rem;
+      } */
+      .form-element-checkbox label {
+        margin-left: 0.5rem;
       }
       #tootUrlTextInput {
         background-color: yellow;
+      }
+      textarea, input[type=text] {
+        width: 50rem;
+        max-width: 80vw;
       }
     </style>
   </head>
   <body>
     <div>
-      <style id="tootStyle"></style>
       <h2>Embed-a-Toot</h2>
-      <p>Open-source toot embedding by
-        <a href="https://www.stuartschechter.org/">Stuart Schechter</a>
-        (<a href="https://mastodon.social/@MildlyAggrievedScientist">@MildlyAggrievedScientist@Mastodon.social</a>)
-        that you can contribute to on <a href="https://github.com/uppajung/embed-a-toot/">Github</a>.
+      <p>Open-source toot embedding by that you can contribute to on <a href="https://github.com/uppajung/embed-a-toot/">Github</a>.
       </p>
       <script id="tootScript"></script>
-      <div class="form-element" style="margin-bottom: 3rem; margin-top: 3rem;">
+      <div class="form-element" style="margin-bottom: 2rem; margin-top: 2rem;">
         <label for="tootUrlTextInput">URL of Toot</label>
-        <input id="tootUrlTextInput" type="text" size="60" />
+        <input id="tootUrlTextInput" type="text"/>
+      </div>
+      <div class="form-element">
+        <label for="embeddedCssContainer">Style sheet</label>
+        <select id="selectStyleSheet"></select>
       </div>
       <div class="form-element">
         <label for="embeddedCssContainer">CSS (embed once in a &lt;style&gt; element or add to your site's CSS)</label>
         <textarea id="embeddedCssContainer" cols="80" rows="2" readonly="true" spellcheck="false"></textarea>
       </div>
       <div class="form-element">
-        <label for="embeddedHtmlContainer">HTML (embed where you want the toot to appear)</label>
-        <textarea id="embeddedHtmlContainer" cols="80" rows="2" readonly="true" spellcheck="false"></textarea>
+        <label for="embeddedHtmlContainer">HTML to embed where you want the toot to appear
+          <select id="htmlFormatting">
+            <option value="none">no whitespace</option>
+            <option value="spaces2">indent with two spaces</option>
+            <option value="spaces4">indent with four spaces</option>
+            <option value="tabs">indent with tabs</option>
+          </select>
+        </label>
+        <textarea id="embeddedHtmlContainer" rows="4" readonly="true" spellcheck="false"></textarea>
+      </div>
+      <div class="form-element-checkbox">
+        <input id="noContentUpdates" type="checkbox" />
+        <label for="noContentUpdates">Do not update the content if edited</label>
+      </div>
+      <div class="form-element-checkbox">
+        <input id="noCounterUpdates" type="checkbox" />
+        <label for="noCounterUpdates">Do not update the favorite and re-blog counters</label>
       </div>
       <div class="form-element" id="embeddedScriptContainerBlock">
-        <label for="embeddedScriptContainer">JavaScript</label>
+        <label for="embeddedScriptContainer">JavaScript to automatically update toots (or download it <a href="./updated-embedded-posts.js">minified</a> or <a href="./updated-embedded-posts-debug.js">non-minified</a>)
+        </label>
         <textarea id="embeddedScriptContainer" cols="80" rows="2" readonly="true" spellcheck="false"></textarea>
       </div>
       <div class="form-element" style="margin-top: 1rem;">
+        <style id="tootStyle"></style>
         <label for="embeddedTootContainer">Renders as</label>
         <div id="embeddedTootContainer"></div>
       </div>
     </div>
-    <script type="module" src="/src/index.ts"></script>
+    <footer>Brought to you by <a href="https://www.stuartschechter.org/">Stuart Schechter</a>
+      (<a href="https://mastodon.social/@MildlyAggrievedScientist">@MildlyAggrievedScientist@Mastodon.social</a>)
+    </footer>
   </body>
 </html>

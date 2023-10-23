@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Tools for embedding Mastodon Toots (Fediverse Posts)",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "node build-updated-embedded-posts-script.js && vite build",
     "dev": "vite",
     "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,7 +26,9 @@
   "homepage": "https://github.com/uppajung/embed-a-toot#readme",
   "devDependencies": {
     "@types/dompurify": "^3.0.3",
-    "typescript": "^5.3.0-beta",
+    "esbuild": "^0.19.5",
+    "esbuild-plugin-tsc": "^0.4.0",
+    "typescript": "^5.2.2",
     "vite": "^4.4.11"
   },
   "dependencies": {
