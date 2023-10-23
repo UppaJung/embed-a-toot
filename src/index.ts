@@ -1,33 +1,38 @@
 import type { MediaAttachment, Status } from "./MastodonApiV1Entities";
-import { ObservableComputation, ObservableValue } from "./Observable";
+import { ObservableComputation, ObservableHTMLInputCheckboxElementValue, ObservableHTMLInputElementValue, ObservableValue } from "./Observable";
 import { fetchStatus } from "./fetchFromMastodonApi";
 import DOMPurify from 'dompurify';
-import domtoimage from 'dom-to-image';
 
 import {templateHtml} from "./tootTemplateHtml";
 // @ts-ignore:
-import templateCss from "./tootTemplate.css?raw"; // with { type: "text/plain" };
+import { shadesOfBlue } from "./style-sheets/shares-of-blue-css"; // with { type: "text/plain" };
 import { emojifyHtml } from "./emojifyHtml";
-import { TemplateClass, TemplateDataKey } from "./TemplateConstants";
+import { TemplateDataKey } from "./TemplateConstants";
+import updatedEmbeddedPostsJs from "../public/updated-embedded-posts.js?raw";
+import { KnownMediaType, renderMediaPreviews } from "./AttachedMedia";
 
-const KnownMediaTypes = [
-	"image", //  Static image
-	"gifv", //  Looping, soundless animation
-	"video", //  Video clip
-	"audio" //  Audio track
-] as const;
-type KnownMediaType = (typeof KnownMediaTypes)[number];
+type HtmlFormattingPreference = "none" | "spaces2" | "spaces4" | "tabs";
+
+const styleSheets = {
+	"Shades of Blue": shadesOfBlue
+} as const satisfies {[key: string]: string};
+
+type StyleSheetName = keyof typeof styleSheets;
+const StyleSheetNames = Object.keys(styleSheets) as StyleSheetName[];
 
 const elementIds = [
-	"tootUrlTextInput",
 	"embeddedCssContainer",
 	"embeddedHtmlContainer",
 	"embeddedScriptContainer",
 	"embeddedScriptContainerBlock",
 	"embeddedTootContainer",
-	"embeddedTootSvgContainer",
+	"htmlFormatting",
+	"noContentUpdates",
+	"noCounterUpdates",
+	"selectStyleSheet",
 	"tootScript",
 	"tootStyle",
+	"tootUrlTextInput",
 ] as const;
 
 const addValuesToTemplate = (template: string, keyValuePairs: Record<string, string>) => {
@@ -54,7 +59,11 @@ class IndexPage {
 	observableStatusUrl: ObservableValue<string>;
 	observableStatus = new ObservableValue<Status | undefined>(undefined);
 
-	// favoritesLink = https://mastodon.social/@MildlyAggrievedScientist/111059248419599712/favourites
+	htmlFormattingPreference: ObservableHTMLInputElementValue<HtmlFormattingPreference>;
+	noContentUpdates: ObservableHTMLInputCheckboxElementValue;
+	noCounterUpdates: ObservableHTMLInputCheckboxElementValue;
+	selectStyleSheet: ObservableHTMLInputElementValue<StyleSheetName>;
+
 	onStatusUrlChange = async (
 		statusUrlAtInstantOfEvent: string = (this.elements.tootUrlTextInput as HTMLInputElement).value
 	) => {
@@ -69,18 +78,19 @@ class IndexPage {
 		this.observableStatus.value = this.statusCache.get(this.observableStatusUrl.value);
 	}
 
-	options = new ObservableComputation( (): string => {
-		// FIXME
-		return "";
-	})
+	optionAttributes = new ObservableComputation( (): string =>
+		(this.noCounterUpdates.value ? "" : " data-update-counters") + 
+		(this.noContentUpdates.value ? "" : " data-update-content")
+	)
 
-	html = new ObservableComputation( (): string => {
+
+	unformattedHtml = new ObservableComputation( (): string => {
 		const status = this.observableStatus.value;
 		if (status == null) return "";
 		return addValuesToTemplate(templateHtml, {
 			authorLink: status.account.url,
 			authorUserName: status.account.username,
-			options: this.options.value,
+			optionAttributes: this.optionAttributes.value,
 			server: new URL(status.account.url).hostname,
 			statusId: status.id,
 			authorName: emojifyHtml(status.account.display_name, status.account.emojis),
@@ -105,6 +115,28 @@ class IndexPage {
 			reblogsCount: `${status.reblogs_count}`,
 		} satisfies Record<TemplateDataKey, string>);
 	});
+	
+	html = new ObservableComputation( (): string => {
+		const html = this.unformattedHtml.value;
+		switch (this.htmlFormattingPreference.value) {
+			case "none":
+				return html.replaceAll("\t","").replaceAll("\n","");
+			case "spaces2":
+				return html.replaceAll("\t","  ");
+			case "spaces2":
+				return html.replaceAll("\t","    ");
+			default:
+				return html;
+		}
+	});
+
+	styleSheetCss = new ObservableComputation( () =>
+		styleSheets[this.selectStyleSheet.value]
+	)
+
+	needsJavaScript = new ObservableComputation( (): boolean =>
+		!(this.noContentUpdates.value && this.noCounterUpdates.value)
+	)
 
 	mediaAttachments = new ObservableComputation( (): (MediaAttachment & {type: KnownMediaType | "unknown"})[] =>
 		(this.observableStatus.value?.media_attachments ?? []) as (MediaAttachment & {type: KnownMediaType | "unknown"})[]
@@ -114,28 +146,17 @@ class IndexPage {
 		this.mediaAttachments.value.find( ma => ma.type === "gifv" || ma.type === "video") != null
 	);
 
-	previews = new ObservableComputation( (): string => {
-		const status = this.observableStatus.value;
-		// console.log('media attachments', status?.media_attachments);
-		if (status == null) return "";
-		const mediaAttachments = status.media_attachments as (MediaAttachment & {type: KnownMediaType | "unknown"})[];
-		return mediaAttachments.map( (ma) => {
-			switch (ma.type) {
-				case "image": return `<img class="${TemplateClass.fediverseAttachment}" src="${ma.url}" />`;
-				case "gifv": return `<video class="${TemplateClass.fediverseAttachment}" video" role="application" src="${ma.url}" controls playsinline autoplay loop></video>`;
-				case "video": return `<video class="${TemplateClass.fediverseAttachment}" gifv" role="application" src="${ma.url}" controls playsinline autoplay loop></video>`;
-				case "audio": return ``;
-			}
-			return;
-		}).join("");
-	});
+	previews = new ObservableComputation( (): string =>
+		this.observableStatus.value == null ? "" : renderMediaPreviews(this.observableStatus.value)
+	);
 
-	script = new ObservableComputation( () => {
-		if (!this.hasVideos.value) return "";
-		return `document.addEventListener('DOMContentLoaded', () => {
-			document.querySelectorAll(".fediverse-status video").forEach( (video) => { video.play().catch( () => {} ) });
-		});
-		`;
+	script = new ObservableComputation( (): string => {
+		return updatedEmbeddedPostsJs
+		// if (!this.hasVideos.value) return "";
+		// return `document.addEventListener('DOMContentLoaded', () => {
+		// 	document.querySelectorAll(".fediverse-status video").forEach( (video) => { video.play().catch( () => {} ) });
+		// });
+		// `;
 	});
 
 
@@ -150,10 +171,29 @@ class IndexPage {
 			.map( pair => pair.split('='))
 			.find( ([key]) => key === "toot") ?? ["", ""])
 			[1];
+		this.htmlFormattingPreference = new ObservableHTMLInputElementValue<HtmlFormattingPreference>({
+			element: this.elements.htmlFormatting as HTMLInputElement,
+			initialValue: "none"
+		});
+		this.selectStyleSheet = new ObservableHTMLInputElementValue<StyleSheetName>({
+			element: this.elements.selectStyleSheet as HTMLInputElement,
+			initialValue: StyleSheetNames[0]
+		})
+		this.noContentUpdates = new ObservableHTMLInputCheckboxElementValue({
+			element: this.elements.noContentUpdates as HTMLInputElement,
+			initialValue: false
+		});
+		this.noCounterUpdates = new ObservableHTMLInputCheckboxElementValue({
+			element: this.elements.noCounterUpdates as HTMLInputElement,
+			initialValue: false
+		});
+		this.elements.selectStyleSheet.innerHTML = StyleSheetNames.map( styleName =>
+			`<option value="${styleName}">${styleName}</option>`	
+		).join("");
+
 		this.elements.tootUrlTextInput.addEventListener('change', () => this.onStatusUrlChange());
 		this.elements.tootUrlTextInput.addEventListener('paste', (e) => this.onStatusUrlChange(e.clipboardData?.getData('text')));
 		this.observableStatusUrl = new ObservableValue<string>("")
-		this.elements.embeddedCssContainer.textContent = templateCss; //.replaceAll("\n","");
 		this.script.listen( script => {
 			this.elements.embeddedScriptContainerBlock.style.visibility = (script.length === 0) ? 'hidden' : 'visible';
 			this.elements.embeddedScriptContainer.innerText = script;
@@ -162,21 +202,23 @@ class IndexPage {
 		this.html.listen( html => {
 			this.elements.embeddedTootContainer.innerHTML = html;
 			this.elements.embeddedHtmlContainer.textContent = html;
-			this.elements.tootStyle.replaceChildren(document.createTextNode(templateCss));
-			if (html.length > 0) {
-				setTimeout( () => {
-					domtoimage.toSvg(this.elements.embeddedTootContainer.children[0]).then( svg => {
-						const image = document.createElement('img');
-						image.src = svg;
-						this.elements.embeddedTootSvgContainer.replaceChildren(image);
-						return;				
-					});
-				}, 1000);
-			}
+			this.elements.tootStyle.replaceChildren(document.createTextNode(this.styleSheetCss.value));
 			// document.querySelectorAll(".fediverse-status video").forEach( (video) => { (video as HTMLVideoElement).play().catch( e => {
 			// 	console.log(`could not play`, e);
 			// })});
 		});
+		this.styleSheetCss.listen( css => {
+			this.elements.embeddedCssContainer.textContent = css;
+			this.elements.tootStyle.replaceChildren(document.createTextNode(css));
+		})
+		this.needsJavaScript.listen( needsJs => {
+			if (needsJs) {
+				this.elements.embeddedScriptContainer.removeAttribute('disabled');
+			} else {
+				console.log('disabling');
+				this.elements.embeddedScriptContainer.setAttribute('disabled', '');
+			}
+		})
 		this.onStatusUrlChange();
 		textAreaSelectAndCopyOnClick(this.elements.embeddedHtmlContainer as HTMLTextAreaElement);
 		textAreaSelectAndCopyOnClick(this.elements.embeddedCssContainer as HTMLTextAreaElement);

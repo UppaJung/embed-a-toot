@@ -1,8 +1,8 @@
 import { build } from 'esbuild';
 
 await build({
-  entryPoints: ['src/updateEmbeddedPosts.ts'],
-  outfile: "dist/updated-embedded-posts.js",
+  entryPoints: ['src/updateEmbeddedPostsOnLoad.ts'],
+  outfile: "public/updated-embedded-posts.js",
   bundle: true,
   minify: true,
   sourcemap: true,
@@ -10,8 +10,8 @@ await build({
 });
 
 await build({
-  entryPoints: ['src/updateEmbeddedPosts.ts'],
-  outfile: "dist/updated-embedded-posts-debug.js",
+  entryPoints: ['src/updateEmbeddedPostsOnLoad.ts'],
+  outfile: "public/updated-embedded-posts-debug.js",
   bundle: true,
   minify: false,
   sourcemap: true,

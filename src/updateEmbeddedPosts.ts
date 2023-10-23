@@ -53,12 +53,11 @@ const updateEmbeddedPost = (
 	}
 }
 
-
-const updateEmbeddedPosts = () => {
-	const commentContainerElements = document.querySelectorAll('[data-mastodon-host][data-status-id]');
-	for (const postsOutermostElement of commentContainerElements) {
+export const updateEmbeddedPosts = () => {
+	return Promise.allSettled(
+		[...document.querySelectorAll('[data-mastodon-host][data-status-id]')]
+		.map( async (postsOutermostElement) => {
 		if (postsOutermostElement instanceof HTMLElement) {
-
 			const {mastodonHost, statusId, update, updateContent, updateCounters} = postsOutermostElement.dataset as {
 				mastodonHost: string;
 				statusId: string;
@@ -72,13 +71,9 @@ const updateEmbeddedPosts = () => {
 				content: update != null || updateContent != null,
 			};
 			if (dataToUpdate.content || dataToUpdate.counters) {
-				fetchStatus({host: mastodonHost, status: statusId})
-				.then( status => updateEmbeddedPost(postsOutermostElement, dataToUpdate, status ))
+				const status = await fetchStatus({host: mastodonHost, status: statusId});
+				updateEmbeddedPost(postsOutermostElement, dataToUpdate, status );
 			};
 		}
-	}
+	}));
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-	updateEmbeddedPosts()
-})

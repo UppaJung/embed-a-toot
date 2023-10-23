@@ -2,7 +2,7 @@ import {TemplateDataKey, TemplateClass} from "./TemplateConstants";
 
 const html = String.raw;
 export const templateHtml = html`
-<article class="${TemplateClass.fediverseStatus}" data-server="${TemplateDataKey.server}" data-status="${TemplateDataKey.statusId}" data-options="${TemplateDataKey.options}">
+<article class="${TemplateClass.fediverseStatus}" data-mastodon-host="${TemplateDataKey.server}" data-status="${TemplateDataKey.statusId}"${TemplateDataKey.optionAttributes}>
 	<header>
 		<a href="${TemplateDataKey.authorLink}" rel="external nofollow" title="view profile at @${TemplateDataKey.authorUserName}@${TemplateDataKey.server}" class="${TemplateClass.authorsAvatarLink}">
 			<picture class="${TemplateClass.authorsAvatar}">
@@ -27,4 +27,4 @@ export const templateHtml = html`
 		<a href="${TemplateDataKey.reblogsLink}" title="reblogs reported by ${TemplateDataKey.server}" class="${TemplateClass.counterReblogs}">${TemplateDataKey.reblogsCount}</a>
 	</footer>
 </article>
-`;
+`.trim();

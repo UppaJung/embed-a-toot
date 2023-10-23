@@ -1,4 +1,4 @@
-// Short & simple observable computations similar to mobx
+// Short & simple observables similar to mobx
 // 2023-10-05
 
 const computationStack: ObservableComputation<any>[] = [];
@@ -19,8 +19,13 @@ const recomputeInvalidatedValues = () => {
 	}
 }
 
+export interface Observable<T> {
+	onChange: (listener: (newValue: T, oldValue: T | undefined) => void) => void;
+	listen: (listener: (newValue: T, oldValue: T | undefined) => void) => void;
+	value: T;
+}
 
-abstract class Observable<T> {
+abstract class ObservableBase<T> implements Observable<T> {
 	#changeHandlers = new Set<(newValue: T, oldValue: T | undefined) => void>;
 	#dependentComputations = new Set<ObservableComputation<unknown>>();
 
@@ -66,8 +71,18 @@ abstract class Observable<T> {
 	}
 }
 
-export class ObservableHTMLInputElementValue<T extends string = string> extends Observable<T> {
-	#element: HTMLInputElement;
+export class ObservableHTMLInputElementValue<T extends string = string> extends ObservableBase<T> {
+	readonly #element: HTMLInputElement;
+
+	/**
+	 * Returns the HTMLInputElement that is being observed.
+	 * 
+	 * Since the value of that element should always be read and written to
+	 * using this class, we hide the value field from the element so that
+	 * callers do not accidentally read or write it directly, which could
+	 * lead to the value changing without being observed.
+	 */
+	get element() { return this.#element as Omit<HTMLInputElement, "value">}
 	#cachedValue: T | undefined;
 
 	get value(): T {
@@ -77,6 +92,9 @@ export class ObservableHTMLInputElementValue<T extends string = string> extends 
 
 	set value(newValue: T) {
 		const oldValue = this.#element.value as T;
+		if (this.#name != null) {
+			console.log(`Update ${this.#name}`, newValue, oldValue);
+		}
 		if (newValue !== oldValue) {
 			this.#element.value = this.#cachedValue = newValue;
 			this.callAfterSetChangesValue(newValue, oldValue);
@@ -89,21 +107,76 @@ export class ObservableHTMLInputElementValue<T extends string = string> extends 
 		this.callAfterSetChangesValue(this.#element.value as T, oldValue);
 	}
 
+	readonly #name?: string;
 	constructor({initialValue, element}:{
 		element: HTMLInputElement,
 		initialValue?: T
-	}) {
+	}, name?: string) {
 		super();
+		this.#name = name;
 		this.#element = element;
 		if (initialValue != null) {
 			this.#element.value = initialValue;
 		}
 		this.#element.addEventListener('input', () => this.#changeListener() );
 		this.#element.addEventListener('change', () => this.#changeListener() );
+		this.#element.addEventListener('paste', () => this.#changeListener() );
 	}
 }
 
-export class ObservableValue<T> extends Observable<T> {
+export class ObservableHTMLInputCheckboxElementValue extends ObservableBase<boolean> {
+	readonly #element: HTMLInputElement;
+
+	/**
+	 * Returns the HTMLInputElement that is being observed.
+	 * 
+	 * Since the value of that element should always be read and written to
+	 * using this class, we hide the value field from the element so that
+	 * callers do not accidentally read or write it directly, which could
+	 * lead to the value changing without being observed.
+	 */
+	get element() { return this.#element as Omit<HTMLInputElement, "value">}
+	#cachedValue: boolean;
+
+	get value(): boolean {
+		this.callBeforeGetValue();
+		return this.#element.checked;
+	}
+
+	set value(newValue: boolean) {
+		const oldValue = this.#element.checked;
+		if (this.#name != null) {
+			console.log(`Update ${this.#name}`, newValue, oldValue);
+		}
+		if (newValue !== oldValue) {
+			this.#element.checked = this.#cachedValue = newValue;
+			this.callAfterSetChangesValue(newValue, oldValue);
+		}
+	}
+
+	#changeListener = () => {
+		const oldValue = this.#cachedValue;
+		this.#cachedValue = this.#element.checked;
+		this.callAfterSetChangesValue(this.#element.checked, oldValue);
+	}
+
+	readonly #name?: string;
+	constructor({initialValue, element}:{
+		element: HTMLInputElement,
+		initialValue?: boolean
+	}, name?: string) {
+		super();
+		this.#name = name;
+		this.#element = element;
+		if (initialValue != null) {
+			this.#element.checked = initialValue;
+		}
+		this.#cachedValue = this.#element.checked;
+		this.#element.addEventListener('change', () => this.#changeListener() );
+	}
+}
+
+export class ObservableValue<T> extends ObservableBase<T> {
 	#value: T;
 
 	get value(): T {
@@ -125,7 +198,7 @@ export class ObservableValue<T> extends Observable<T> {
 	}
 }
 
-export class ObservableComputation<T> extends Observable<T> {
+export class ObservableComputation<T> extends ObservableBase<T> {
 	#cachedResult: T | undefined;
 	#valid = false;
 
@@ -147,6 +220,9 @@ export class ObservableComputation<T> extends Observable<T> {
 			this.#valid = true;
 			return newResult;
 		} finally {
+			if (this.logAs != null) {
+				console.log(`Computed ${this.logAs}`, newResult)
+			}
 			computationStack.shift();
 			computationsRequiringRecalculation.delete(this);
 			if (this.#valid && newResult !== oldValue) {
@@ -166,12 +242,8 @@ export class ObservableComputation<T> extends Observable<T> {
 
 	#computation: () => T;
 
-	constructor(computation: () => T, computeImmediately: boolean = false) {
+	constructor(computation: () => T, protected logAs?: string) {
 		super();
 		this.#computation = computation;
-		if (computeImmediately) {
-			this.compute();
-		}
 	}
 }
-

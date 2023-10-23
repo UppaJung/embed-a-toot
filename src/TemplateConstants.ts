@@ -11,7 +11,7 @@ export const TemplateDataKeyList = [
 	"editedDateTimeText",
 	"favoritesCount",
 	"favoritesLink",
-	"options",
+	"optionAttributes",
 	"reblogsLink",
 	"reblogsCount",
 	"server",

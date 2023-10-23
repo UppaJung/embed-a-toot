@@ -25,7 +25,6 @@
   },
   "homepage": "https://github.com/uppajung/embed-a-toot#readme",
   "devDependencies": {
-    "@types/dom-to-image": "^2.6.5",
     "@types/dompurify": "^3.0.3",
     "esbuild": "^0.19.5",
     "esbuild-plugin-tsc": "^0.4.0",
@@ -33,7 +32,6 @@
     "vite": "^4.4.11"
   },
   "dependencies": {
-    "dom-to-image": "^2.6.0",
     "dompurify": "^3.0.6"
   }
 }
