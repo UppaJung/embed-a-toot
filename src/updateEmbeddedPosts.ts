@@ -1,5 +1,7 @@
+import { renderMediaPreviews } from "./AttachedMedia";
 import { Status } from "./MastodonApiV1Entities";
 import { TemplateClass } from "./TemplateConstants";
+import { emojifyHtml } from "./emojifyHtml";
 import { fetchStatus } from "./fetchFromMastodonApi";
 
 // Support for the HTML Sanitizer API (not yet supported by Safari/FireFox)
@@ -28,19 +30,23 @@ const updateEmbeddedPost = (
 ) => {
 	const contentMainElement = postsOutermostElement.querySelector(`main`);
 	const counterReblogsElement = postsOutermostElement.querySelector(`.${TemplateClass.counterReblogs}`);
+	const counterRepliesElement = postsOutermostElement.querySelector(`.${TemplateClass.counterReplies}`);
 	const counterFavouritesElement = postsOutermostElement.querySelector(`.${TemplateClass.counterFavourites}`);
 	const editedDateTimeElement = postsOutermostElement.querySelector(`.${TemplateClass.editTime}`) as HTMLTimeElement;
-
 	if (dataToUpdate.content && contentMainElement && "setHTML" in contentMainElement) {
-		contentMainElement.setHTML(status.content);
+		contentMainElement.setHTML(
+			emojifyHtml(status.content, status.emojis) +
+			renderMediaPreviews(status)
+		);
 		if (status.edited_at && editedDateTimeElement) {
-			editedDateTimeElement.attributes.removeNamedItem('display');
+			editedDateTimeElement.removeAttribute('display');
 			const editedAtDate = new Date(status.edited_at);
 			editedDateTimeElement.dateTime = editedAtDate.toISOString();
 			editedDateTimeElement.textContent = editedAtDate.toLocaleString(undefined, {
 				month: "short", day: "numeric", year: "numeric",
 				hour: "numeric", minute: "2-digit"
 			});
+
 		}
 	}
 	if (dataToUpdate.counters) {
@@ -48,19 +54,22 @@ const updateEmbeddedPost = (
 			counterReblogsElement.textContent = `${status.reblogs_count}`;
 		}
 		if (counterFavouritesElement != null) {
-			counterFavouritesElement.textContent = `${status.reblogs_count}`;
+			counterFavouritesElement.textContent = `${status.favourites_count}`;
+		}
+		if (counterRepliesElement != null) {
+			counterRepliesElement.textContent = `${status.replies_count}`;
 		}
 	}
 }
 
 export const updateEmbeddedPosts = () => {
 	return Promise.allSettled(
-		[...document.querySelectorAll('[data-mastodon-host][data-status-id]')]
+		[...document.querySelectorAll('[data-mastodon-host][data-status]')]
 		.map( async (postsOutermostElement) => {
 		if (postsOutermostElement instanceof HTMLElement) {
-			const {mastodonHost, statusId, update, updateContent, updateCounters} = postsOutermostElement.dataset as {
+			const {mastodonHost, status, update, updateContent, updateCounters} = postsOutermostElement.dataset as {
 				mastodonHost: string;
-				statusId: string;
+				status: string;
 				update?: string;
 				updateCounters?: string;
 				updateContent?: string;
@@ -71,8 +80,8 @@ export const updateEmbeddedPosts = () => {
 				content: update != null || updateContent != null,
 			};
 			if (dataToUpdate.content || dataToUpdate.counters) {
-				const status = await fetchStatus({host: mastodonHost, status: statusId});
-				updateEmbeddedPost(postsOutermostElement, dataToUpdate, status );
+				const statusObj = await fetchStatus({host: mastodonHost, status});
+				updateEmbeddedPost(postsOutermostElement, dataToUpdate, statusObj );
 			};
 		}
 	}));

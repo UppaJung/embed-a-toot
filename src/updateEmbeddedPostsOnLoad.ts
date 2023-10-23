@@ -20,8 +20,8 @@ const updateEmbeddedPostsSerial = () => {
 			updateInProgress = false;
 		});
 	} while (updateAgainCompletionOfInProgress);
-
 }
+
 document.addEventListener('DOMContentLoaded', () => {
 	updateEmbeddedPostsSerial();
 

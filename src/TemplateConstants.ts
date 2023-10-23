@@ -13,7 +13,9 @@ export const TemplateDataKeyList = [
 	"favoritesLink",
 	"optionAttributes",
 	"reblogsLink",
+	"repliesLink",
 	"reblogsCount",
+	"repliesCount",
 	"server",
 	"statusId",
 ] as const;
@@ -31,6 +33,7 @@ export const TemplateClass = {
 	authorsAvatarLink: "authors-avatar-link",
 	counterFavourites: "counter-favourites",
 	counterReblogs: "counter-reblogs",
+	counterReplies: "counter-replies",
 	editTime: "edit-time",
 	postAuthor: "post-author",
 	postAuthorsDisplayName: "post-authors-display-name",

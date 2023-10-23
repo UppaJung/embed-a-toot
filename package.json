@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "build-script": "node build-updated-embedded-posts-script.js",
     "build": "node build-updated-embedded-posts-script.js && vite build",
     "dev": "vite",
     "preview": "vite preview",
