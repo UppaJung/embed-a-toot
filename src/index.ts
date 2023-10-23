@@ -5,7 +5,8 @@ import DOMPurify from 'dompurify';
 
 import {templateHtml} from "./tootTemplateHtml";
 // @ts-ignore:
-import { shadesOfBlue } from "./style-sheets/shares-of-blue-css"; // with { type: "text/plain" };
+import { shadesOfBlue } from "./style-sheets/shades-of-blue"; // with { type: "text/plain" };
+import { boxed } from "./style-sheets/boxed"; // with { type: "text/plain" };
 import { emojifyHtml } from "./emojifyHtml";
 import { TemplateDataKey } from "./TemplateConstants";
 import updatedEmbeddedPostsJs from "../public/updated-embedded-posts.js?raw";
@@ -14,7 +15,8 @@ import { KnownMediaType, renderMediaPreviews } from "./AttachedMedia";
 type HtmlFormattingPreference = "none" | "spaces2" | "spaces4" | "tabs";
 
 const styleSheets = {
-	"Shades of Blue": shadesOfBlue
+	"Boxed": boxed,
+	"Shades of Blue": shadesOfBlue,
 } as const satisfies {[key: string]: string};
 
 type StyleSheetName = keyof typeof styleSheets;
@@ -111,7 +113,9 @@ class IndexPage {
 				}),
 			favoritesLink: `${status.url}/favourites`,
 			reblogsLink: `${status.url}/reblogs`,
+			repliesLink: `${status.url}`,
 			favoritesCount: `${status.favourites_count}`,
+			repliesCount: `${status.replies_count}`,
 			reblogsCount: `${status.reblogs_count}`,
 		} satisfies Record<TemplateDataKey, string>);
 	});

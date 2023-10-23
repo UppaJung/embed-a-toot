@@ -23,8 +23,9 @@ export const templateHtml = html`
 	<footer>
 		<time datetime="${TemplateDataKey.dateTimeIso}" class="${TemplateClass.postTime}">${TemplateDataKey.dateTimeText}</time>
 		<time ${TemplateDataKey.displayNoneIfNotEdited} datetime="${TemplateDataKey.editedDateTimeIso}" class="${TemplateClass.editTime}">edited at ${TemplateDataKey.editedDateTimeText}</time>
-		<a href="${TemplateDataKey.favoritesLink}" title="favourites reported by ${TemplateDataKey.server}" class="${TemplateClass.counterFavourites}">${TemplateDataKey.favoritesCount}</a>
-		<a href="${TemplateDataKey.reblogsLink}" title="reblogs reported by ${TemplateDataKey.server}" class="${TemplateClass.counterReblogs}">${TemplateDataKey.reblogsCount}</a>
+		<a href="${TemplateDataKey.favoritesLink}" title="favourites" class="${TemplateClass.counterFavourites}">${TemplateDataKey.favoritesCount}</a>
+		<a href="${TemplateDataKey.reblogsLink}" title="reblogs" class="${TemplateClass.counterReblogs}">${TemplateDataKey.reblogsCount}</a>
+		<a href="${TemplateDataKey.repliesLink}" title="replies" class="${TemplateClass.counterReplies}">${TemplateDataKey.repliesCount}</a>
 	</footer>
 </article>
 `.trim();
