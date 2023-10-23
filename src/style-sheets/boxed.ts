@@ -7,7 +7,7 @@ export const boxed = css`
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: flex-start;
-	max-width: 80vw;
+	max-width: calc(min(80vw, 40rem));
 	border-radius: 0.5rem;
 	border-width: 1px;
 	border-color: rgba(128, 128, 128, 1);
