@@ -80,7 +80,12 @@ export const updateEmbeddedPosts = () => {
 				content: update != null || updateContent != null,
 			};
 			if (dataToUpdate.content || dataToUpdate.counters) {
-				const statusObj = await fetchStatus({host: mastodonHost, status});
+				const statusObj = await fetchStatus({host: mastodonHost, status}, {
+					headers: {
+						"Request-Purpose": "update embedded status",
+						"Request-Module": `https://github.com/UppaJung/embed-a-toot v${__VERSION__}`,
+					}
+				});
 				updateEmbeddedPost(postsOutermostElement, dataToUpdate, statusObj );
 			};
 		}

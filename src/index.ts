@@ -73,7 +73,12 @@ class IndexPage {
 		if (!this.statusCache.has(statusUrlAtInstantOfEvent) && statusUrlAtInstantOfEvent.length > 0) {
 			try {
 				this.statusCache.set(statusUrlAtInstantOfEvent, undefined);
-				const cachedStatus = await fetchStatus(statusUrlAtInstantOfEvent);
+				const cachedStatus = await fetchStatus(statusUrlAtInstantOfEvent, {
+					headers: {
+						"Request-Purpose": "create embedded status",
+						"Request-Module": `https://github.com/UppaJung/embed-a-toot v${__VERSION__}`,
+					}
+				});
 				this.statusCache.set(statusUrlAtInstantOfEvent, cachedStatus);	
 			} catch {}
 		}
@@ -111,12 +116,14 @@ class IndexPage {
 					month: "short", day: "numeric", year: "numeric",
 					hour: "numeric", minute: "2-digit"
 				}),
+			embedATootVersion: __VERSION__,
 			favoritesLink: `${status.url}/favourites`,
 			reblogsLink: `${status.url}/reblogs`,
 			repliesLink: `${status.url}`,
 			favoritesCount: `${status.favourites_count}`,
 			repliesCount: `${status.replies_count}`,
 			reblogsCount: `${status.reblogs_count}`,
+			whenEmbedGeneratedDateTimeIso: new Date().toISOString(),
 		} satisfies Record<TemplateDataKey, string>);
 	});
 	
@@ -127,7 +134,7 @@ class IndexPage {
 				return html.replaceAll("\t","").replaceAll("\n","");
 			case "spaces2":
 				return html.replaceAll("\t","  ");
-			case "spaces2":
+			case "spaces4":
 				return html.replaceAll("\t","    ");
 			default:
 				return html;

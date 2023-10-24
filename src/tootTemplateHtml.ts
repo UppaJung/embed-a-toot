@@ -2,7 +2,7 @@ import {TemplateDataKey, TemplateClass} from "./TemplateConstants";
 
 const html = String.raw;
 export const templateHtml = html`
-<article class="${TemplateClass.fediverseStatus}" data-mastodon-host="${TemplateDataKey.server}" data-status="${TemplateDataKey.statusId}"${TemplateDataKey.optionAttributes}>
+<article class="${TemplateClass.fediverseStatus}" data-mastodon-host="${TemplateDataKey.server}" data-status="${TemplateDataKey.statusId}" data-created-by="https://github.com/UppaJung/embed-a-toot;v${TemplateDataKey.embedATootVersion};${TemplateDataKey.whenEmbedGeneratedDateTimeIso}"${TemplateDataKey.optionAttributes}>
 	<header>
 		<a href="${TemplateDataKey.authorLink}" rel="external nofollow" title="view profile at @${TemplateDataKey.authorUserName}@${TemplateDataKey.server}" class="${TemplateClass.authorsAvatarLink}">
 			<picture class="${TemplateClass.authorsAvatar}">

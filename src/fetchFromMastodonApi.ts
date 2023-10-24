@@ -26,9 +26,9 @@ const fetchJson = async <T>(...args: Parameters<typeof fetch>): Promise<T> => {
 	}
 	return (await response.json()) as T;
 };
-export const fetchStatus = (urlOrStatusQuery: StatusQuery | string) => {
+export const fetchStatus = (urlOrStatusQuery: StatusQuery | string, init: RequestInit = {}) => {
 	const { host, status } = (typeof urlOrStatusQuery === "string") ?
 		urlToStatusQuery(urlOrStatusQuery) :
 		urlOrStatusQuery;
-	return fetchJson<Status>(`https://${host}/api/v1/statuses/${status}, {});`);
+	return fetchJson<Status>(`https://${host}/api/v1/statuses/${status}`, init);
 }

@@ -9,6 +9,7 @@ export const TemplateDataKeyList = [
 	"dateTimeText",
 	"displayNoneIfNotEdited",
 	"editedDateTimeText",
+	"embedATootVersion",
 	"favoritesCount",
 	"favoritesLink",
 	"optionAttributes",
@@ -18,6 +19,7 @@ export const TemplateDataKeyList = [
 	"repliesCount",
 	"server",
 	"statusId",
+	"whenEmbedGeneratedDateTimeIso"
 ] as const;
 export type TemplateDataKey = NonNullable<typeof TemplateDataKeyList[number]>;
 export const TemplateDataKey = TemplateDataKeyList.reduce( (tk, k) => {
