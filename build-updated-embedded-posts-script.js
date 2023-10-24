@@ -1,5 +1,6 @@
 import { build } from 'esbuild';
 import packageJson from "./package.json" assert { type: "json" };
+const version = packageJson.version;
 
 console.log(`Building embedded javascript for version ${version}`);
 await build({
