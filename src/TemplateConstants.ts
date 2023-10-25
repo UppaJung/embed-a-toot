@@ -8,7 +8,7 @@ export const TemplateDataKeyList = [
 	"dateTimeIso",
 	"editedDateTimeIso",
 	"dateTimeText",
-	"displayNoneIfNotEdited",
+	"hiddenIfNotEdited",
 	"editedDateTimeText",
 	"embedATootVersion",
 	"favoritesCount",
