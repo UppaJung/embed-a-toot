@@ -4,25 +4,16 @@ import { fetchStatus } from "./fetchFromMastodonApi";
 import DOMPurify from 'dompurify';
 
 import {templateHtml} from "./tootTemplateHtml";
-// @ts-ignore:
-import { shadesOfBlue } from "./style-sheets/shades-of-blue"; // with { type: "text/plain" };
-import { boxed } from "./style-sheets/boxed"; // with { type: "text/plain" };
 import { emojifyHtml } from "./emojifyHtml";
 import { TemplateDataKey } from "./TemplateConstants";
 import updatedEmbeddedPostsJs from "../public/updated-embedded-posts.js?raw";
 import { KnownMediaType, renderMediaPreviews } from "./AttachedMedia";
+import { StyleSheetName, StyleSheetNames, StyleSheets, styleSheetNameToFileName } from "./style-sheets";
 
 type HtmlFormattingPreference = "none" | "spaces2" | "spaces4" | "tabs";
 
-const styleSheets = {
-	"Boxed": boxed,
-	"Shades of Blue": shadesOfBlue,
-} as const satisfies {[key: string]: string};
-
-type StyleSheetName = keyof typeof styleSheets;
-const StyleSheetNames = Object.keys(styleSheets) as StyleSheetName[];
-
 const elementIds = [
+	"downloadCssLink",
 	"embeddedCssContainer",
 	"embeddedHtmlContainer",
 	"embeddedScriptContainer",
@@ -95,6 +86,7 @@ class IndexPage {
 		const status = this.observableStatus.value;
 		if (status == null) return "";
 		return addValuesToTemplate(templateHtml, {
+			attachedMedia: this.attachedMedia.value,
 			authorLink: status.account.url,
 			authorUserName: status.account.username,
 			optionAttributes: this.optionAttributes.value,
@@ -102,7 +94,7 @@ class IndexPage {
 			statusId: status.id,
 			authorName: emojifyHtml(status.account.display_name, status.account.emojis),
 			avatarUrl: status.account.avatar,
-			contentHtml: emojifyHtml(status.content, status.emojis) + this.previews.value,
+			contentHtml: emojifyHtml(status.content, status.emojis),
 			dateTimeIso: new Date(status.created_at).toISOString(),
 			dateTimeText: new Date(status.created_at).toLocaleString(undefined, {
 				month: "short", day: "numeric", year: "numeric",
@@ -142,7 +134,7 @@ class IndexPage {
 	});
 
 	styleSheetCss = new ObservableComputation( () =>
-		styleSheets[this.selectStyleSheet.value]
+		StyleSheets[this.selectStyleSheet.value]
 	)
 
 	needsJavaScript = new ObservableComputation( (): boolean =>
@@ -157,7 +149,7 @@ class IndexPage {
 		this.mediaAttachments.value.find( ma => ma.type === "gifv" || ma.type === "video") != null
 	);
 
-	previews = new ObservableComputation( (): string =>
+	attachedMedia = new ObservableComputation( (): string =>
 		this.observableStatus.value == null ? "" : renderMediaPreviews(this.observableStatus.value)
 	);
 
@@ -218,6 +210,11 @@ class IndexPage {
 			// 	console.log(`could not play`, e);
 			// })});
 		});
+		this.selectStyleSheet.listen( styleSheetName => {
+			const fileName = styleSheetNameToFileName(styleSheetName);
+			this.elements.downloadCssLink.setAttribute('href', fileName);
+			this.elements.downloadCssLink.textContent = fileName;
+		})
 		this.styleSheetCss.listen( css => {
 			this.elements.embeddedCssContainer.textContent = css;
 			this.elements.tootStyle.replaceChildren(document.createTextNode(css));

@@ -20,6 +20,7 @@ export const templateHtml = html`
 		</div>
 	</header>
 	<main>${TemplateDataKey.contentHtml}</main>
+	${TemplateDataKey.attachedMedia}
 	<footer>
 		<time datetime="${TemplateDataKey.dateTimeIso}" class="${TemplateClass.postTime}">${TemplateDataKey.dateTimeText}</time>
 		<time ${TemplateDataKey.displayNoneIfNotEdited} datetime="${TemplateDataKey.editedDateTimeIso}" class="${TemplateClass.editTime}">edited at ${TemplateDataKey.editedDateTimeText}</time>

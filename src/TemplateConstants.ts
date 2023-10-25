@@ -1,4 +1,5 @@
 export const TemplateDataKeyList = [
+	"attachedMedia",
 	"authorLink",
 	"authorName",
 	"authorUserName",

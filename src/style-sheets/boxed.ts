@@ -1,19 +1,27 @@
 import { TemplateClass } from "../TemplateConstants";
 const css = String.raw;
 
+const maxWidthOfPost = `min(80vw, 40rem)` as const;
+const paddingEachEdge = `0.25rem` as const;
+const maxWidthInsidePadding = `calc(${maxWidthOfPost} - 2 * ${paddingEachEdge})` as const;
+
 export const boxed = css`
 .${TemplateClass.fediverseStatus} {
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: flex-start;
-	max-width: calc(min(80vw, 40rem));
+	max-width: ${maxWidthOfPost};
 	border-radius: 0.5rem;
 	border-width: 1px;
 	border-color: rgba(128, 128, 128, 1);
 	border-style: solid;
+	box-sizing: content-box;
 }
 
+.${TemplateClass.fediverseStatus}::before, .${TemplateClass.fediverseStatus}::after {
+	box-sizing: content-box;
+}
 /*
  Emoji in user display names and image content are converted to images,
  which should be rendered at the same size (height) as the content.
@@ -23,14 +31,17 @@ export const boxed = css`
 	max-height: 1rem;
 }
 
-.${TemplateClass.fediverseStatus} .${TemplateClass.fediverseAttachment} {
-	max-width: calc(80vw - 2rem);
+.${TemplateClass.fediverseStatus} header, .${TemplateClass.fediverseStatus} footer, .${TemplateClass.fediverseStatus} main {
+	box-sizing: content-box;
+	padding-left: ${paddingEachEdge};
+	padding-right: ${paddingEachEdge};
+	width: ${maxWidthInsidePadding};
 }
 
-.${TemplateClass.fediverseStatus} header, .${TemplateClass.fediverseStatus} footer, .${TemplateClass.fediverseStatus} main {
-	padding: 0.25rem;
-	width: calc(100% - 0.5rem);
+.${TemplateClass.fediverseStatus} header, .${TemplateClass.fediverseStatus} footer {
+	padding-top: ${paddingEachEdge};
 }
+
 
 /*
 	Common traits of both the header and the footer of a status.
@@ -66,8 +77,8 @@ export const boxed = css`
 	/* background-color: rgba(128, 128, 128, 0.05); */
 	/* pad left to align with header/footer content, but do not pad right (go to edge) */
 	/* pad top and bottom */
-	padding-top: 0.25rem;
-	padding-bottom: 0.25rem;
+	padding-top: ${paddingEachEdge};
+	padding-bottom: ${paddingEachEdge};
 }
 
 /* use small margins for content */
@@ -136,7 +147,15 @@ export const boxed = css`
 	margin-inline-end: .25em;          
 }
 
-.${TemplateClass.fediverseStatus} main img, .${TemplateClass.fediverseStatus} main video {
+/**
+	Center attached media and scale down to size of toot
+*/
+.${TemplateClass.fediverseStatus} .${TemplateClass.fediverseAttachment} {
+	max-width: ${maxWidthOfPost};
+	object-fit: contain;
+	box-sizing: content-box;
+	border-radius: 0;
+	margin: 0;
 	padding-top: 0.5rem;
 	display: block;
   margin-left: auto;

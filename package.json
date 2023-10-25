@@ -5,12 +5,12 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build-script": "node build-updated-embedded-posts-script.js",
-    "build": "node build-updated-embedded-posts-script.js && vite build",
+    "build-script": "node build-scripts-and-styles.js && node public/buildStyleSheetFiles.cjs",
+    "build": "npm run build-script && vite build",
     "dev": "vite",
     "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  },                                       
   "repository": {
     "type": "git",
     "url": "git+https://github.com/uppajung/embed-a-toot.git"
@@ -29,6 +29,7 @@
     "@types/dompurify": "^3.0.3",
     "esbuild": "^0.19.5",
     "esbuild-plugin-tsc": "^0.4.0",
+    "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
     "vite": "^4.4.11"
   },
