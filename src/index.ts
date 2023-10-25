@@ -66,7 +66,7 @@ class IndexPage {
 				this.statusCache.set(statusUrlAtInstantOfEvent, undefined);
 				const cachedStatus = await fetchStatus(statusUrlAtInstantOfEvent, {
 					headers: {
-						"Request-Purpose": "create embedded status",
+						"Request-Purpose": "generate html to embed this post onto a webpage",
 						"Request-Module": `https://github.com/UppaJung/embed-a-toot v${__VERSION__}`,
 					}
 				});

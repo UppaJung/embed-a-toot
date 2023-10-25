@@ -82,7 +82,7 @@ export const updateEmbeddedPosts = () => {
 			if (dataToUpdate.content || dataToUpdate.counters) {
 				const statusObj = await fetchStatus({host: mastodonHost, status}, {
 					headers: {
-						"Request-Purpose": "update embedded status",
+						"Request-Purpose": "update rendered post on the referring page",
 						"Request-Module": `https://github.com/UppaJung/embed-a-toot v${__VERSION__}`,
 					}
 				});
