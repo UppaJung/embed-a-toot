@@ -100,7 +100,7 @@ class IndexPage {
 				month: "short", day: "numeric", year: "numeric",
 				hour: "numeric", minute: "2-digit"
 			}),
-			displayNoneIfNotEdited: status.edited_at == null ? `display="none"` : "",
+			displayNoneIfNotEdited: status.edited_at == null ? ` hidden` : "",
 			editedDateTimeIso: status.edited_at == null ? "" :
 				new Date(status.edited_at).toISOString(),
 			editedDateTimeText: status.edited_at == null ? "" :

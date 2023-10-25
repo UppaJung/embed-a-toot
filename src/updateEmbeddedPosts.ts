@@ -39,7 +39,7 @@ const updateEmbeddedPost = (
 			renderMediaPreviews(status)
 		);
 		if (status.edited_at && editedDateTimeElement) {
-			editedDateTimeElement.removeAttribute('display');
+			editedDateTimeElement.removeAttribute('hidden');
 			const editedAtDate = new Date(status.edited_at);
 			editedDateTimeElement.dateTime = editedAtDate.toISOString();
 			editedDateTimeElement.textContent = editedAtDate.toLocaleString(undefined, {
