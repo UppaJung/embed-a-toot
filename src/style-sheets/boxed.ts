@@ -17,6 +17,9 @@ export const boxed = css`
 	border-color: rgba(128, 128, 128, 1);
 	border-style: solid;
 	box-sizing: content-box;
+	margin-left: auto;
+  margin-right: auto;
+	margin-bottom: 1rem;
 }
 
 .${TemplateClass.fediverseStatus}::before, .${TemplateClass.fediverseStatus}::after {
