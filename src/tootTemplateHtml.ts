@@ -19,8 +19,8 @@ export const templateHtml = html`
 				</a>
 		</div>
 	</header>
-	<main>${TemplateDataKey.contentHtml}</main>
-	${TemplateDataKey.attachedMedia}
+	<main>${TemplateDataKey.contentHtml}</main>${
+		TemplateDataKey.attachedMedia}
 	<footer>
 		<time datetime="${TemplateDataKey.dateTimeIso}" class="${TemplateClass.postTime}">${TemplateDataKey.dateTimeText}</time>
 		<time ${TemplateDataKey.hiddenIfNotEdited}datetime="${TemplateDataKey.editedDateTimeIso}" class="${TemplateClass.editTime}">edited at ${TemplateDataKey.editedDateTimeText}</time>
