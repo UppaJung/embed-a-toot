@@ -38,7 +38,7 @@ export const boxed = css`
 	box-sizing: content-box;
 	padding-left: ${paddingEachEdge};
 	padding-right: ${paddingEachEdge};
-	width: ${maxWidthInsidePadding};
+	width: 100%;
 }
 
 .${TemplateClass.fediverseStatus} header, .${TemplateClass.fediverseStatus} footer {
@@ -163,6 +163,7 @@ export const boxed = css`
 	display: block;
   margin-left: auto;
   margin-right: auto;
+	width: 100%;
 }
 
 `.trim();
